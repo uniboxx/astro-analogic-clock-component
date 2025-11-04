@@ -7,7 +7,7 @@ import netlify from '@astrojs/netlify';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://astro-analogic-clock.netlify.app',
   integrations: [sitemap()],
   adapter: netlify(),
 });
