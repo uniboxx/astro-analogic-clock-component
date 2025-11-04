@@ -35,6 +35,7 @@ if (typeof interval === 'string') {
 // size
 const sizeResult = size.match(regex)!;
 const sizeMeasure = +sizeResult.groups?.measure!;
+const baseSize = `${sizeMeasure / 100}em`;
 
 // number style
 // prettier-ignore
@@ -46,13 +47,12 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
   class:list={[classList]}
   {...attrs}
   data-interval={intervalSize}
-  style={`--size: ${size}`}
 >
   {
     Array.from({ length: 60 }).map((_, idx) => {
       const rotation = (idx + 1) * 6;
-      const maxLineHeight = sizeMeasure * 0.08;
-      const maxLineWidth = sizeMeasure * 0.012;
+      const lineHeight = rotation % 5 === 0 ? 6 : 3;
+      const lineWidth = rotation % 5 === 0 ? 1 : 0.5;
       const number =
         numberStyle === 'roman'
           ? romans[Math.trunc(idx / 5)]
@@ -60,7 +60,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
       return (
         <div
           class="content"
-          style={`--rotation: ${rotation}deg;--line-height: ${rotation % 5 === 0 ? maxLineHeight : maxLineHeight * 0.5}em;--line-width: ${rotation % 5 === 0 ? maxLineWidth : maxLineWidth * 0.5}em`}
+          style={`--rotation: ${rotation}deg;--line-height: ${lineHeight}%;--line-width: ${lineWidth}%`}
         >
           <div class="line" />
           {rotation % 5 === 0 && (
@@ -85,13 +85,19 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
     </div>
   </div>
 
-  <style>
+  <style define:vars={{ size, baseSize }}>
     #clock-container {
+      --paddingX: 5px;
+      --maxSize: calc(100svw - var(--paddingX) * 2);
       position: relative;
-      border: calc(var(--size) * 0.03) solid #000;
+      container-type: size;
+      border: calc(var(--baseSize) * 1.5) solid #000;
       border-radius: 50%;
+      padding: var(--paddingX);
       width: var(--size);
+      max-width: var(--maxSize);
       height: var(--size);
+      max-height: var(--maxSize);
 
       .line,
       .number,
@@ -116,18 +122,34 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
           height: var(--line-height);
         }
         .number {
-          --number-size: 80%;
+          --number-size: 86%;
           display: flex;
           top: calc((100% - var(--number-size)) / 2);
           left: calc((100% - var(--number-size)) / 2);
           justify-content: center;
           width: var(--number-size);
           height: var(--number-size);
-          font-size: calc(var(--size) * 0.08);
           text-align: center;
+
           span {
             position: absolute;
             transform: rotate(calc(var(--rotation) * -1));
+            font-size: 1em;
+          }
+        }
+        @container (min-width: 15rem) {
+          .number span {
+            font-size: 1.5em;
+          }
+        }
+        @container (min-width: 20rem) {
+          .number span {
+            font-size: 2em;
+          }
+        }
+        @container (min-width: 25rem) {
+          .number span {
+            font-size: 2.5em;
           }
         }
       }
@@ -140,7 +162,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
         transform: translate(-50%, -50%);
       }
       .pern {
-        --pern-size: calc(var(--size) * 0.04);
+        --pern-size: calc(var(--baseSize) * 3);
         z-index: 20;
         border-radius: 50%;
         background: #f00;
@@ -194,7 +216,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
         }
       }
       #date {
-        --date-size: 45%;
+        --date-size: 50%;
         position: absolute;
         top: calc((100% - var(--date-size)) / 2);
         left: calc((100% - var(--date-size)) / 2);
@@ -206,21 +228,36 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: calc(var(--size) * 0.01);
           transform: rotate(-90deg);
           margin: 0 auto;
-          border: calc(var(--size) * 0.007) solid #333;
-          border-radius: calc(var(--size) * 0.006);
+          border: 0.1em solid #333;
+          border-radius: 0.1em;
           width: max-content;
           height: max-content;
           font-weight: 600;
           font-size: calc(var(--size) * 0.04);
           line-height: 1;
           span {
-            padding: calc(var(--size) * 0.01) calc(var(--size) * 0.02);
+            padding: 0.2em 0.4em;
+            font-size: 0.4em;
           }
           .day {
             border-right: calc(var(--size) * 0.005) solid #000;
+          }
+        }
+        @container (min-width: 15rem) {
+          .content span {
+            font-size: 0.6em;
+          }
+        }
+        @container (min-width: 20rem) {
+          .content span {
+            font-size: 0.8em;
+          }
+        }
+        @container (min-width: 25rem) {
+          .content span {
+            font-size: 1em;
           }
         }
       }
@@ -234,6 +271,18 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
     const seconds = container.querySelector('#seconds') as HTMLDivElement;
     const minutes = container.querySelector('#minutes') as HTMLDivElement;
     const hours = container.querySelector('#hours') as HTMLDivElement;
+    const numbers = container.querySelectorAll(
+      '.number span'
+    ) as NodeListOf<HTMLDivElement>;
+
+    const containerWidth = container.clientWidth;
+    console.log('🚀 ~ :259 ~ containerWidth:', containerWidth);
+
+    // number size
+    // numbers.forEach((number) => {
+    //   number.style.fontSize = `${containerWidth / 12}px`;
+    //   number.style.fontSize = `${containerWidth / 12}px`;
+    // });
 
     const interval = +container.dataset.interval!;
 
