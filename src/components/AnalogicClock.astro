@@ -1,0 +1,266 @@
+---
+/* 
+INFORMATION
+set 
+- size as string in rem (size of the clock)
+- interval as string in seconds or milliseconds or as number of milliseconds
+- numberStyle as 'normal' or 'roman'
+*/
+interface Props {
+  class?: string;
+  size?: string;
+  interval?: string | number;
+  numberStyle?: 'normal' | 'roman';
+}
+const {
+  class: classList,
+  size = '30rem',
+  interval = '1000ms',
+  numberStyle = 'normal',
+  ...attrs
+} = Astro.props;
+
+const regex = /(?<measure>[\d\.]+)(?<intervalUnit>s|ms)?/;
+// interval
+let intervalSize;
+if (typeof interval === 'string') {
+  const intervalResult = interval.match(regex)!;
+  intervalSize = +intervalResult.groups?.measure!;
+  const intervalUnit = intervalResult.groups?.intervalUnit!;
+  intervalSize = intervalUnit === 's' ? intervalSize * 1000 : intervalSize;
+} else {
+  intervalSize = interval;
+}
+
+// size
+const sizeResult = size.match(regex)!;
+const sizeMeasure = +sizeResult.groups?.measure!;
+
+// number style
+// prettier-ignore
+const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI', 'XII'];
+---
+
+<div
+  id="clock-container"
+  class:list={[classList]}
+  {...attrs}
+  data-interval={intervalSize}
+  style={`--size: ${size}`}
+>
+  {
+    Array.from({ length: 60 }).map((_, idx) => {
+      const rotation = (idx + 1) * 6;
+      const maxLineHeight = sizeMeasure * 0.08;
+      const maxLineWidth = sizeMeasure * 0.012;
+      const number =
+        numberStyle === 'roman'
+          ? romans[Math.trunc(idx / 5)]
+          : Math.trunc(idx / 5 + 1);
+      return (
+        <div
+          class="content"
+          style={`--rotation: ${rotation}deg;--line-height: ${rotation % 5 === 0 ? maxLineHeight : maxLineHeight * 0.5}em;--line-width: ${rotation % 5 === 0 ? maxLineWidth : maxLineWidth * 0.5}em`}
+        >
+          <div class="line" />
+          {rotation % 5 === 0 && (
+            <div class="number">
+              <span>{number}</span>
+            </div>
+          )}
+        </div>
+      );
+    })
+  }
+  <span id="hours"></span>
+  <span id="minutes"></span>
+  {intervalSize <= 1000 && <span id="seconds" />}
+  <span class="pern"></span>
+  <div id="date">
+    <div class="content">
+      <span class="day">{new Date().getDate()}</span>
+      <span class="month"
+        >{new Date().toLocaleString('default', { month: 'short' })}</span
+      >
+    </div>
+  </div>
+
+  <style>
+    #clock-container {
+      position: relative;
+      border: calc(var(--size) * 0.03) solid #000;
+      border-radius: 50%;
+      width: var(--size);
+      height: var(--size);
+
+      .line,
+      .number,
+      .pern,
+      #seconds,
+      #minutes,
+      #hours {
+        position: absolute;
+        inset: 0;
+      }
+
+      .content {
+        position: absolute;
+        transform: rotate(var(--rotation));
+        inset: 0;
+
+        .line {
+          left: 50%;
+          transform: translateX(-50%);
+          background: #000;
+          width: var(--line-width);
+          height: var(--line-height);
+        }
+        .number {
+          --number-size: 80%;
+          display: flex;
+          top: calc((100% - var(--number-size)) / 2);
+          left: calc((100% - var(--number-size)) / 2);
+          justify-content: center;
+          width: var(--number-size);
+          height: var(--number-size);
+          font-size: calc(var(--size) * 0.08);
+          text-align: center;
+          span {
+            position: absolute;
+            transform: rotate(calc(var(--rotation) * -1));
+          }
+        }
+      }
+      .pern,
+      #seconds,
+      #minutes,
+      #hours {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .pern {
+        --pern-size: calc(var(--size) * 0.04);
+        z-index: 20;
+        border-radius: 50%;
+        background: #f00;
+        width: var(--pern-size);
+        height: var(--pern-size);
+      }
+      #seconds,
+      #minutes,
+      #hours {
+        display: block;
+        transform-origin: center bottom;
+        z-index: 10;
+        background: #000;
+        &::after {
+          --after_height: 40%;
+          position: absolute;
+          bottom: calc(var(--after_height) * -1);
+          left: 0;
+          transform: translateX(-25%);
+          clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
+          width: 200%;
+          height: var(--after_height);
+          content: '';
+        }
+      }
+      #hours,
+      #minutes {
+        clip-path: polygon(40% 0, 60% 0%, 100% 140%, 0 140%);
+        transition: 1s;
+        width: calc(var(--size) * 0.02);
+        &::after {
+          background: #000;
+        }
+      }
+      #hours {
+        background: #000;
+        height: 30%;
+      }
+      #minutes {
+        z-index: 11;
+        background: #000;
+        height: 40%;
+      }
+      #seconds {
+        z-index: 12;
+        background: #f00;
+        width: calc(var(--size) * 0.005);
+        height: 35%;
+        &::after {
+          background: #f00;
+        }
+      }
+      #date {
+        --date-size: 45%;
+        position: absolute;
+        top: calc((100% - var(--date-size)) / 2);
+        left: calc((100% - var(--date-size)) / 2);
+        transform: rotate(90deg);
+        width: var(--date-size);
+        height: var(--date-size);
+
+        .content {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: calc(var(--size) * 0.01);
+          transform: rotate(-90deg);
+          margin: 0 auto;
+          border: calc(var(--size) * 0.007) solid #333;
+          border-radius: calc(var(--size) * 0.006);
+          width: max-content;
+          height: max-content;
+          font-weight: 600;
+          font-size: calc(var(--size) * 0.04);
+          line-height: 1;
+          span {
+            padding: calc(var(--size) * 0.01) calc(var(--size) * 0.02);
+          }
+          .day {
+            border-right: calc(var(--size) * 0.005) solid #000;
+          }
+        }
+      }
+    }
+  </style>
+
+  <script>
+    const container = document.getElementById(
+      'clock-container'
+    ) as HTMLDivElement;
+    const seconds = container.querySelector('#seconds') as HTMLDivElement;
+    const minutes = container.querySelector('#minutes') as HTMLDivElement;
+    const hours = container.querySelector('#hours') as HTMLDivElement;
+
+    const interval = +container.dataset.interval!;
+
+    setInterval(() => {
+      const time = new Date();
+      const timeHours = time.getHours();
+      const timeMinutes = time.getMinutes();
+      const timeSeconds = time.getSeconds();
+      const timeMilliseconds = time.getMilliseconds();
+
+      const hoursDegrees =
+        (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
+      hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
+
+      const minutesDegrees = ((timeMinutes * 6) % 360) + timeSeconds / 10;
+      minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
+
+      const milliSecondsDegrees =
+        interval < 1000
+          ? Math.floor((timeSeconds * 1000 + timeMilliseconds) / 1.6666) / 100
+          : interval === 1000
+            ? timeSeconds * 6
+            : 0;
+
+      seconds.style.transform = `translate(-50%, -100%) rotate(${milliSecondsDegrees}deg)`;
+      // console.log('🚀 ~ :81 ~ time:', time);
+      // console.log('🚀 ~ :139 ~ milliSecondsDegrees:', milliSecondsDegrees);
+    }, interval);
+  </script>
+</div>
