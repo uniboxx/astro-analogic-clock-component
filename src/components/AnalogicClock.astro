@@ -385,11 +385,16 @@ const baseSize = `${sizeMeasure / 100}em`;
         left: 50%;
         transform: translateX(-50%);
         width: 100%;
-        color: navy;
+        color: hsl(240, 100%, 50%);
         font-weight: 400;
         font-size: 0.32em;
         font-family: 'Italianno', serif;
         text-align: center;
+        text-shadow:
+          0 0 0.5em hsl(204 42% 70%),
+          0 0 1em hsl(204 42% 70%),
+          0 0 2em hsl(204 42% 70%),
+          0 0 4em hsl(204 42% 70%);
       }
     }
     @container (min-width: 4rem) {
