@@ -14,7 +14,7 @@ interface Props {
 }
 const {
   class: classList,
-  size = '30rem',
+  size = '52rem',
   interval = '1000ms',
   numberStyle = 'normal',
   ...attrs
@@ -128,28 +128,77 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
           justify-content: center;
           width: var(--number-size);
           height: var(--number-size);
-          font-weight: 600;
           text-align: center;
 
           span {
             position: absolute;
             transform: rotate(calc(var(--rotation) * -1));
+            font-weight: 600;
+            font-size: 0.4em;
+          }
+        }
+        @container (min-width: 2.5rem) {
+          .number span {
+            font-size: 0.6em;
+          }
+        }
+        @container (min-width: 5rem) {
+          .number span {
+            font-size: 0.8em;
+          }
+        }
+        @container (min-width: 8rem) {
+          .number span {
             font-size: 1em;
+          }
+        }
+        @container (min-width: 11rem) {
+          .number span {
+            font-size: 1.2em;
           }
         }
         @container (min-width: 15rem) {
           .number span {
-            font-size: 1.5em;
+            font-size: 1.4em;
           }
         }
-        @container (min-width: 20rem) {
+
+        @container (min-width: 19rem) {
+          .number span {
+            font-size: 1.8em;
+          }
+        }
+        @container (min-width: 23rem) {
           .number span {
             font-size: 2em;
           }
         }
-        @container (min-width: 25rem) {
+        @container (min-width: 27rem) {
           .number span {
-            font-size: 2.5em;
+            font-size: 2.6em;
+          }
+        }
+        @container (min-width: 33rem) {
+          .number span {
+            font-size: 3em;
+          }
+        }
+        @container (min-width: 38rem) {
+          .number span {
+            font-size: 3.5em;
+          }
+        }
+        @container (min-width: 44rem) {
+          .number span {
+            font-size: 4em;
+          }
+        }
+        @container (min-width: 49rem) {
+          .number {
+            --number-size: 88%;
+            span {
+              font-size: 5em;
+            }
           }
         }
       }
@@ -216,7 +265,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
         }
       }
       #date {
-        --date-size: 45%;
+        --date-size: 40%;
         position: absolute;
         top: calc((100% - var(--date-size)) / 2);
         left: calc((100% - var(--date-size)) / 2);
@@ -225,7 +274,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
         height: var(--date-size);
 
         .content {
-          display: flex;
+          display: none;
           justify-content: center;
           align-items: center;
           transform: rotate(-90deg);
@@ -238,31 +287,78 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
           span {
             padding: 0.2em 0.4em;
             font-weight: 600;
-            font-size: 0.3em;
           }
           .day {
             border-right: 0.1em solid #000;
           }
         }
-        @container (min-width: 10rem) {
+
+        @container (min-width: 5rem) {
+          .content {
+            display: flex;
+            span {
+              font-size: 0.35em;
+            }
+          }
+        }
+        @container (min-width: 7rem) {
+          --date-size: 45%;
+          .content span {
+            font-size: 0.4em;
+          }
+        }
+        @container (min-width: 9rem) {
           --date-size: 50%;
           .content span {
-            font-size: 0.6em;
+            font-size: 0.5em;
+          }
+        }
+        @container (min-width: 11rem) {
+          .content {
+            span {
+              font-size: 0.6em;
+            }
           }
         }
         @container (min-width: 15rem) {
           .content span {
-            font-size: 0.8em;
+            font-size: 0.7em;
           }
         }
-        @container (min-width: 20rem) {
+        @container (min-width: 19rem) {
+          .content span {
+            font-size: 0.9em;
+          }
+        }
+        @container (min-width: 23rem) {
+          --date-size: 53%;
           .content span {
             font-size: 1em;
           }
         }
-        @container (min-width: 25rem) {
+        @container (min-width: 27rem) {
           .content span {
             font-size: 1.2em;
+          }
+        }
+        @container (min-width: 33rem) {
+          .content span {
+            font-size: 1.4em;
+          }
+        }
+        @container (min-width: 38rem) {
+          .content span {
+            font-size: 1.6em;
+          }
+        }
+        @container (min-width: 44rem) {
+          .content span {
+            font-size: 1.8em;
+          }
+        }
+        @container (min-width: 50rem) {
+          .content span {
+            font-size: 2.2em;
           }
         }
       }
