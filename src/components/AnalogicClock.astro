@@ -519,27 +519,33 @@ const baseSize = `${sizeMeasure / 100}em`;
   setNumberStyle(selectNumericStyle.value);
 
   // seconds style
-  let interval = 1000,
-    clock: any;
+  let interval: number, clock: any;
 
   function setSecondsStyle(value: string) {
-    console.log('🚀 ~ :525 ~ setSecondsStyle ~ value:', value);
+    // console.log('🚀 ~ :525 ~ setSecondsStyle ~ value:', value);
     if (value === 'smooty') {
-      interval = 100;
       seconds.style.display = 'block';
       pern.style.background = '#f00';
+      updateClock(100);
     } else if (value === 'off') {
-      interval = 60000;
       seconds.style.display = 'none';
       pern.style.background = '#000';
+
+      updateClock(1001);
+      interval = 60000 - new Date().getSeconds() * 1000;
+      console.log('🚀 ~ :535 ~ setSecondsStyle ~ interval:', interval);
+
+      setTimeout(() => {
+        updateClock(interval - 1500);
+      }, 1500);
+      setTimeout(() => {
+        updateClock(60000);
+      }, interval + 500);
     } else {
-      interval = 1000;
       seconds.style.display = 'block';
       pern.style.background = '#f00';
+      updateClock(1000);
     }
-
-    stopUpdateClock();
-    startUpdateClock(updateClock, interval);
   }
   selectSecondsStyle.addEventListener('change', (e: any) => {
     const style = e.currentTarget?.value;
@@ -555,41 +561,40 @@ const baseSize = `${sizeMeasure / 100}em`;
   dayEl.textContent = day.toString();
   monthEl.textContent = month;
 
-  function startUpdateClock(func: Function, interval: number) {
-    clock = setInterval(
-      (clockInterval = interval) => func(clockInterval),
-      interval
-    );
-  }
-  function stopUpdateClock() {
-    clearInterval(clock);
-  }
-
   function updateClock(interval: number) {
-    const time = new Date();
-    const timeHours = time.getHours();
-    const timeMinutes = time.getMinutes();
-    const timeSeconds = time.getSeconds();
-    const timeMilliseconds = time.getMilliseconds();
-
-    const hoursDegrees = (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
-    hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
+    if (clock) clearInterval(clock);
     console.log('interval', interval);
-    const minutesDegrees =
-      interval <= 1000 ? timeMinutes * 6 + timeSeconds / 10 : timeMinutes * 6;
-    console.log('🚀 ~ :577 ~ updateClock ~ minutesDegrees:', minutesDegrees);
-    minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
-    const secondsDegrees =
-      interval < 1000
-        ? Math.ceil((timeSeconds * 1000 + timeMilliseconds) / 1.666666) / 100
-        : interval === 1000
-          ? timeSeconds * 6
-          : 0;
+    clock = setInterval(() => {
+      const time = new Date();
+      const timeHours = time.getHours();
+      const timeMinutes = time.getMinutes();
+      const timeSeconds = time.getSeconds();
+      const timeMilliseconds = time.getMilliseconds();
 
-    seconds.style.transform = `translate(-50%, -100%) rotate(${secondsDegrees}deg)`;
-    // console.log('🚀 ~ :81 ~ time:', time);
-    // console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
+      const hoursDegrees =
+        (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
+      hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
+      let minutesDegrees;
+      if (interval <= 1000) {
+        minutesDegrees = timeMinutes * 6 + timeSeconds / 10;
+      } else {
+        minutesDegrees = timeMinutes * 6;
+      }
+
+      console.log('🚀 ~ :577 ~ updateClock ~ minutesDegrees:', minutesDegrees);
+      minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
+      const secondsDegrees =
+        interval < 1000
+          ? Math.ceil((timeSeconds * 1000 + timeMilliseconds) / 1.666666) / 100
+          : interval === 1000
+            ? timeSeconds * 6
+            : 0;
+
+      seconds.style.transform = `translate(-50%, -100%) rotate(${secondsDegrees}deg)`;
+      // console.log('🚀 ~ :81 ~ time:', time);
+      // console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
+    }, interval);
   }
-  if (clock) stopUpdateClock();
-  startUpdateClock(updateClock, 1000);
+
+  updateClock(1000);
 </script>
