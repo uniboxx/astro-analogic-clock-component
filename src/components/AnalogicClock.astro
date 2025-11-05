@@ -518,28 +518,28 @@ const baseSize = `${sizeMeasure / 100}em`;
   setNumberStyle(selectNumericStyle.value);
 
   // seconds style
+  let interval = 1000,
+    clock: any;
+
   function setSecondsStyle(value: string) {
-    switch (value) {
-      case 'smooty':
-        seconds.style.display = 'block';
-        pern.style.background = '#f00';
-        updateClock(100);
-        break;
-      case 'off':
-        seconds.style.display = 'none';
-        pern.style.background = '#000';
-        updateClock(60000);
-        break;
-      default:
-        seconds.style.display = 'block';
-        pern.style.background = '#f00';
-        updateClock(1000);
-        break;
+    if (value === 'smooty') {
+      interval = 100;
+      seconds.style.display = 'block';
+      pern.style.background = '#f00';
+    } else if (value === 'off') {
+      interval = 60000;
+      seconds.style.display = 'none';
+      pern.style.background = '#000';
+    } else {
+      interval = 1000;
+      seconds.style.display = 'block';
+      pern.style.background = '#f00';
     }
+    stopUpdateClock();
+    startUpdateClock(updateClock, interval);
   }
   selectSecondsStyle.addEventListener('change', (e: any) => {
     const style = e.currentTarget?.value;
-    console.log('🚀 ~ :552 ~ style:', style);
     setSecondsStyle(style);
   });
 
@@ -552,35 +552,39 @@ const baseSize = `${sizeMeasure / 100}em`;
   dayEl.textContent = day.toString();
   monthEl.textContent = month;
 
-  function updateClock(interval: number) {
-    const clock = setInterval(() => {
-      const time = new Date();
-      const timeHours = time.getHours();
-      const timeMinutes = time.getMinutes();
-      const timeSeconds = time.getSeconds();
-      const timeMilliseconds = time.getMilliseconds();
-
-      const hoursDegrees =
-        (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
-      hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
-
-      const minutesDegrees =
-        interval <= 1000 ? timeMinutes * 6 + timeSeconds / 10 : timeMinutes * 6;
-      minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
-
-      const secondsDegrees =
-        interval < 1000
-          ? Math.ceil((timeSeconds * 1000 + timeMilliseconds) / 1.666666) / 100
-          : interval === 1000
-            ? timeSeconds * 6
-            : 0;
-
-      seconds.style.transform = `translate(-50%, -100%) rotate(${secondsDegrees}deg)`;
-      // console.log('🚀 ~ :81 ~ time:', time);
-      console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
-    }, interval);
-    return () => clearInterval(clock);
+  function startUpdateClock(func: Function, interval: number) {
+    clock = setInterval(
+      (clockInterval = interval) => func(clockInterval),
+      interval
+    );
+  }
+  function stopUpdateClock() {
+    clearInterval(clock);
   }
 
-  updateClock(1000);
+  function updateClock(interval: number) {
+    const time = new Date();
+    const timeHours = time.getHours();
+    const timeMinutes = time.getMinutes();
+    const timeSeconds = time.getSeconds();
+    const timeMilliseconds = time.getMilliseconds();
+
+    const hoursDegrees = (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
+    hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
+
+    const minutesDegrees =
+      interval <= 1000 ? timeMinutes * 6 + timeSeconds / 10 : timeMinutes * 6;
+    minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
+    const secondsDegrees =
+      interval < 1000
+        ? Math.ceil((timeSeconds * 1000 + timeMilliseconds) / 1.666666) / 100
+        : interval === 1000
+          ? timeSeconds * 6
+          : 0;
+
+    seconds.style.transform = `translate(-50%, -100%) rotate(${secondsDegrees}deg)`;
+    // console.log('🚀 ~ :81 ~ time:', time);
+    // console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
+  }
+  startUpdateClock(updateClock, 1000);
 </script>
