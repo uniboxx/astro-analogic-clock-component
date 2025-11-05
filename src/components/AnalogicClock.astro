@@ -21,16 +21,6 @@ const {
 } = Astro.props;
 
 const regex = /(?<measure>[\d\.]+)(?<intervalUnit>s|ms)?/;
-// interval
-let intervalSize;
-if (typeof interval === 'string') {
-  const intervalResult = interval.match(regex)!;
-  intervalSize = +intervalResult.groups?.measure!;
-  const intervalUnit = intervalResult.groups?.intervalUnit!;
-  intervalSize = intervalUnit === 's' ? intervalSize * 1000 : intervalSize;
-} else {
-  intervalSize = interval;
-}
 
 // size
 const sizeResult = size.match(regex)!;
@@ -41,12 +31,7 @@ const baseSize = `${sizeMeasure / 100}em`;
 // prettier-ignore
 ---
 
-<div
-  id="clock-container"
-  class:list={[classList]}
-  {...attrs}
-  data-interval={intervalSize}
->
+<div id="clock-container" class:list={[classList]} {...attrs}>
   {
     Array.from({ length: 60 }).map((_, idx) => {
       const rotation = (idx + 1) * 6;
@@ -70,7 +55,7 @@ const baseSize = `${sizeMeasure / 100}em`;
   }
   <span id="hours"></span>
   <span id="minutes"></span>
-  {intervalSize <= 1000 && <span id="seconds" />}
+  <span id="seconds"></span>
   <span id="pern"></span>
   <div id="date">
     <div class="content">
@@ -533,26 +518,22 @@ const baseSize = `${sizeMeasure / 100}em`;
   setNumberStyle(selectNumericStyle.value);
 
   // seconds style
-  let interval = +container.dataset.interval!;
   function setSecondsStyle(value: string) {
     switch (value) {
       case 'smooty':
-        interval = 10;
         seconds.style.display = 'block';
         pern.style.background = '#f00';
-        updateClock();
+        updateClock(100);
         break;
       case 'off':
-        interval = 2000;
         seconds.style.display = 'none';
         pern.style.background = '#000';
-        updateClock();
+        updateClock(60000);
         break;
       default:
-        interval = 1000;
         seconds.style.display = 'block';
         pern.style.background = '#f00';
-        updateClock();
+        updateClock(1000);
         break;
     }
   }
@@ -571,7 +552,7 @@ const baseSize = `${sizeMeasure / 100}em`;
   dayEl.textContent = day.toString();
   monthEl.textContent = month;
 
-  function updateClock() {
+  function updateClock(interval: number) {
     const clock = setInterval(() => {
       const time = new Date();
       const timeHours = time.getHours();
@@ -583,22 +564,23 @@ const baseSize = `${sizeMeasure / 100}em`;
         (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
       hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
 
-      const minutesDegrees = ((timeMinutes * 6) % 360) + timeSeconds / 10;
+      const minutesDegrees =
+        interval <= 1000 ? timeMinutes * 6 + timeSeconds / 10 : timeMinutes * 6;
       minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
 
-      const milliSecondsDegrees =
+      const secondsDegrees =
         interval < 1000
-          ? Math.floor((timeSeconds * 1000 + timeMilliseconds) / 1.6666) / 100
+          ? Math.ceil((timeSeconds * 1000 + timeMilliseconds) / 1.666666) / 100
           : interval === 1000
             ? timeSeconds * 6
             : 0;
 
-      seconds.style.transform = `translate(-50%, -100%) rotate(${milliSecondsDegrees}deg)`;
+      seconds.style.transform = `translate(-50%, -100%) rotate(${secondsDegrees}deg)`;
       // console.log('🚀 ~ :81 ~ time:', time);
-      // console.log('🚀 ~ :139 ~ milliSecondsDegrees:', milliSecondsDegrees);
+      console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
     }, interval);
     return () => clearInterval(clock);
   }
 
-  updateClock();
+  updateClock(1000);
 </script>
