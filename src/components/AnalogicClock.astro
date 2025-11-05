@@ -71,7 +71,7 @@ const baseSize = `${sizeMeasure / 100}em`;
   <span id="hours"></span>
   <span id="minutes"></span>
   {intervalSize <= 1000 && <span id="seconds" />}
-  <span class="pern"></span>
+  <span id="pern"></span>
   <div id="date">
     <div class="content">
       <span class="day"></span>
@@ -86,6 +86,14 @@ const baseSize = `${sizeMeasure / 100}em`;
     <select name="numeric_style" id="numeric_style" value="arabic">
       <option value="arabic">Arabic</option>
       <option value="roman">Roman</option>
+    </select>
+  </label>
+  <label for="seconds_style">
+    Seconds style
+    <select name="seconds_style" id="seconds_style" value="tick">
+      <option value="tick">Tick</option>
+      <option value="smooty">Smooty</option>
+      <option value="off">Off</option>
     </select>
   </label>
 </form>
@@ -108,7 +116,7 @@ const baseSize = `${sizeMeasure / 100}em`;
 
     .line,
     .number,
-    .pern,
+    #pern,
     #seconds,
     #minutes,
     #hours {
@@ -210,7 +218,7 @@ const baseSize = `${sizeMeasure / 100}em`;
         }
       }
     }
-    .pern,
+    #pern,
     #seconds,
     #minutes,
     #hours {
@@ -218,8 +226,8 @@ const baseSize = `${sizeMeasure / 100}em`;
       left: 50%;
       transform: translate(-50%, -50%);
     }
-    .pern {
-      --pern-size: calc(var(--baseSize) * 3);
+    #pern {
+      --pern-size: calc(var(--baseSize) * 4);
       z-index: 20;
       border-radius: 50%;
       background: #f00;
@@ -484,9 +492,10 @@ const baseSize = `${sizeMeasure / 100}em`;
   const container = document.getElementById(
     'clock-container'
   ) as HTMLDivElement;
-  const seconds = container.querySelector('#seconds') as HTMLDivElement;
-  const minutes = container.querySelector('#minutes') as HTMLDivElement;
   const hours = container.querySelector('#hours') as HTMLDivElement;
+  const minutes = container.querySelector('#minutes') as HTMLDivElement;
+  const seconds = container.querySelector('#seconds') as HTMLDivElement;
+  const pern = container.querySelector('#pern') as HTMLDivElement;
   const numbers = container.querySelectorAll(
     '.number span'
   ) as NodeListOf<HTMLDivElement>;
@@ -495,6 +504,9 @@ const baseSize = `${sizeMeasure / 100}em`;
   const form = document.querySelector('form')! as HTMLFormElement;
   const selectNumericStyle = form.querySelector(
     'select#numeric_style'
+  )! as HTMLSelectElement;
+  const selectSecondsStyle = form.querySelector(
+    'select#seconds_style'
   )! as HTMLSelectElement;
 
   // number style
@@ -519,6 +531,38 @@ const baseSize = `${sizeMeasure / 100}em`;
   });
 
   setNumberStyle(selectNumericStyle.value);
+
+  // seconds style
+  let interval = +container.dataset.interval!;
+  function setSecondsStyle(value: string) {
+    switch (value) {
+      case 'smooty':
+        interval = 10;
+        seconds.style.display = 'block';
+        pern.style.background = '#f00';
+        updateClock();
+        break;
+      case 'off':
+        interval = 2000;
+        seconds.style.display = 'none';
+        pern.style.background = '#000';
+        updateClock();
+        break;
+      default:
+        interval = 1000;
+        seconds.style.display = 'block';
+        pern.style.background = '#f00';
+        updateClock();
+        break;
+    }
+  }
+  selectSecondsStyle.addEventListener('change', (e: any) => {
+    const style = e.currentTarget?.value;
+    console.log('🚀 ~ :552 ~ style:', style);
+    setSecondsStyle(style);
+  });
+
+  setSecondsStyle(selectSecondsStyle.value);
   ////////////////////////
 
   // day and month
@@ -527,30 +571,34 @@ const baseSize = `${sizeMeasure / 100}em`;
   dayEl.textContent = day.toString();
   monthEl.textContent = month;
 
-  const interval = +container.dataset.interval!;
+  function updateClock() {
+    const clock = setInterval(() => {
+      const time = new Date();
+      const timeHours = time.getHours();
+      const timeMinutes = time.getMinutes();
+      const timeSeconds = time.getSeconds();
+      const timeMilliseconds = time.getMilliseconds();
 
-  setInterval(() => {
-    const time = new Date();
-    const timeHours = time.getHours();
-    const timeMinutes = time.getMinutes();
-    const timeSeconds = time.getSeconds();
-    const timeMilliseconds = time.getMilliseconds();
+      const hoursDegrees =
+        (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
+      hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
 
-    const hoursDegrees = (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
-    hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
+      const minutesDegrees = ((timeMinutes * 6) % 360) + timeSeconds / 10;
+      minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
 
-    const minutesDegrees = ((timeMinutes * 6) % 360) + timeSeconds / 10;
-    minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
+      const milliSecondsDegrees =
+        interval < 1000
+          ? Math.floor((timeSeconds * 1000 + timeMilliseconds) / 1.6666) / 100
+          : interval === 1000
+            ? timeSeconds * 6
+            : 0;
 
-    const milliSecondsDegrees =
-      interval < 1000
-        ? Math.floor((timeSeconds * 1000 + timeMilliseconds) / 1.6666) / 100
-        : interval === 1000
-          ? timeSeconds * 6
-          : 0;
+      seconds.style.transform = `translate(-50%, -100%) rotate(${milliSecondsDegrees}deg)`;
+      // console.log('🚀 ~ :81 ~ time:', time);
+      // console.log('🚀 ~ :139 ~ milliSecondsDegrees:', milliSecondsDegrees);
+    }, interval);
+    return () => clearInterval(clock);
+  }
 
-    seconds.style.transform = `translate(-50%, -100%) rotate(${milliSecondsDegrees}deg)`;
-    // console.log('🚀 ~ :81 ~ time:', time);
-    // console.log('🚀 ~ :139 ~ milliSecondsDegrees:', milliSecondsDegrees);
-  }, interval);
+  updateClock();
 </script>
