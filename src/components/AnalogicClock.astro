@@ -533,7 +533,7 @@ const baseSize = `${sizeMeasure / 100}em`;
 
       updateClock(1001);
       interval = 60000 - new Date().getSeconds() * 1000;
-      console.log('🚀 ~ :535 ~ setSecondsStyle ~ interval:', interval);
+      // console.log('🚀 ~ :535 ~ setSecondsStyle ~ interval:', interval);
 
       setTimeout(() => {
         updateClock(interval - 1500);
@@ -563,7 +563,7 @@ const baseSize = `${sizeMeasure / 100}em`;
 
   function updateClock(interval: number) {
     if (clock) clearInterval(clock);
-    console.log('interval', interval);
+    // console.log('interval', interval);
     clock = setInterval(() => {
       const time = new Date();
       const timeHours = time.getHours();
@@ -581,7 +581,7 @@ const baseSize = `${sizeMeasure / 100}em`;
         minutesDegrees = timeMinutes * 6;
       }
 
-      console.log('🚀 ~ :577 ~ updateClock ~ minutesDegrees:', minutesDegrees);
+      // console.log('🚀 ~ :577 ~ updateClock ~ minutesDegrees:', minutesDegrees);
       minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
       const secondsDegrees =
         interval < 1000
