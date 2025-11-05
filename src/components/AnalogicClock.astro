@@ -78,10 +78,8 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
   <span class="pern"></span>
   <div id="date">
     <div class="content">
-      <span class="day">{new Date().getDate()}</span>
-      <span class="month"
-        >{new Date().toLocaleString('default', { month: 'short' })}</span
-      >
+      <span class="day"></span>
+      <span class="month"></span>
     </div>
   </div>
 
@@ -218,7 +216,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
         }
       }
       #date {
-        --date-size: 50%;
+        --date-size: 45%;
         position: absolute;
         top: calc((100% - var(--date-size)) / 2);
         left: calc((100% - var(--date-size)) / 2);
@@ -232,34 +230,39 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
           align-items: center;
           transform: rotate(-90deg);
           margin: 0 auto;
-          border: 0.1em solid #333;
+          border: 0.1em solid #000;
           border-radius: 0.1em;
           width: max-content;
           height: max-content;
-          font-weight: 600;
-          font-size: calc(var(--size) * 0.04);
           line-height: 1;
           span {
             padding: 0.2em 0.4em;
-            font-size: 0.4em;
+            font-weight: 600;
+            font-size: 0.3em;
           }
           .day {
-            border-right: calc(var(--size) * 0.005) solid #000;
+            border-right: 0.1em solid #000;
           }
         }
-        @container (min-width: 15rem) {
+        @container (min-width: 10rem) {
+          --date-size: 50%;
           .content span {
             font-size: 0.6em;
           }
         }
-        @container (min-width: 20rem) {
+        @container (min-width: 15rem) {
           .content span {
             font-size: 0.8em;
           }
         }
-        @container (min-width: 25rem) {
+        @container (min-width: 20rem) {
           .content span {
             font-size: 1em;
+          }
+        }
+        @container (min-width: 25rem) {
+          .content span {
+            font-size: 1.2em;
           }
         }
       }
@@ -276,15 +279,17 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
     const numbers = container.querySelectorAll(
       '.number span'
     ) as NodeListOf<HTMLDivElement>;
+    const dayEl = container.querySelector('.day') as HTMLSpanElement;
+    const monthEl = container.querySelector('.month') as HTMLSpanElement;
 
     const containerWidth = container.clientWidth;
     console.log('🚀 ~ :259 ~ containerWidth:', containerWidth);
 
-    // number size
-    // numbers.forEach((number) => {
-    //   number.style.fontSize = `${containerWidth / 12}px`;
-    //   number.style.fontSize = `${containerWidth / 12}px`;
-    // });
+    // day and month
+    const day = new Date().getDate();
+    const month = new Date().toLocaleString('default', { month: 'short' });
+    dayEl.textContent = day.toString();
+    monthEl.textContent = month;
 
     const interval = +container.dataset.interval!;
 
