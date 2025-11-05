@@ -75,8 +75,8 @@ const baseSize = `${sizeMeasure / 100}em`;
   </label>
   <label for="seconds_style">
     Seconds style
-    <select name="seconds_style" id="seconds_style" value="tick">
-      <option value="tick">Tick</option>
+    <select name="seconds_style" id="seconds_style">
+      <option value="tick" selected>Tick</option>
       <option value="smooty">Smooty</option>
       <option value="off">Off</option>
     </select>
@@ -493,6 +493,7 @@ const baseSize = `${sizeMeasure / 100}em`;
   const selectSecondsStyle = form.querySelector(
     'select#seconds_style'
   )! as HTMLSelectElement;
+  selectSecondsStyle.selectedIndex = 0;
 
   // number style
   // prettier-ignore
@@ -522,6 +523,7 @@ const baseSize = `${sizeMeasure / 100}em`;
     clock: any;
 
   function setSecondsStyle(value: string) {
+    console.log('🚀 ~ :525 ~ setSecondsStyle ~ value:', value);
     if (value === 'smooty') {
       interval = 100;
       seconds.style.display = 'block';
@@ -535,6 +537,7 @@ const baseSize = `${sizeMeasure / 100}em`;
       seconds.style.display = 'block';
       pern.style.background = '#f00';
     }
+
     stopUpdateClock();
     startUpdateClock(updateClock, interval);
   }
@@ -571,9 +574,10 @@ const baseSize = `${sizeMeasure / 100}em`;
 
     const hoursDegrees = (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
     hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
-
+    console.log('interval', interval);
     const minutesDegrees =
       interval <= 1000 ? timeMinutes * 6 + timeSeconds / 10 : timeMinutes * 6;
+    console.log('🚀 ~ :577 ~ updateClock ~ minutesDegrees:', minutesDegrees);
     minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
     const secondsDegrees =
       interval < 1000
@@ -586,5 +590,6 @@ const baseSize = `${sizeMeasure / 100}em`;
     // console.log('🚀 ~ :81 ~ time:', time);
     // console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
   }
+  if (clock) stopUpdateClock();
   startUpdateClock(updateClock, 1000);
 </script>
