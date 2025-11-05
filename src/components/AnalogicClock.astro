@@ -39,7 +39,6 @@ const baseSize = `${sizeMeasure / 100}em`;
 
 // number style
 // prettier-ignore
-const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI', 'XII'];
 ---
 
 <div
@@ -53,10 +52,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
       const rotation = (idx + 1) * 6;
       const lineHeight = rotation % 5 === 0 ? 6 : 3;
       const lineWidth = rotation % 5 === 0 ? 1 : 0.5;
-      const number =
-        numberStyle === 'roman'
-          ? romans[Math.trunc(idx / 5)]
-          : Math.trunc(idx / 5 + 1);
+
       return (
         <div
           class="content"
@@ -65,7 +61,7 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
           <div class="line" />
           {rotation % 5 === 0 && (
             <div class="number">
-              <span>{number}</span>
+              <span />
             </div>
           )}
         </div>
@@ -82,337 +78,474 @@ const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X','XI'
       <span class="month"></span>
     </div>
   </div>
+  <div class="brand"><span>By Unibox</span></div>
+</div>
+<form>
+  <label for="numeric_style">
+    Numeric style
+    <select name="numeric_style" id="numeric_style" value="arabic">
+      <option value="arabic">Arabic</option>
+      <option value="roman">Roman</option>
+    </select>
+  </label>
+</form>
 
-  <style define:vars={{ size, baseSize }}>
-    #clock-container {
-      --paddingX: 5px;
-      --maxSize: calc(100svw - var(--paddingX) * 2);
-      position: relative;
-      container-type: size;
-      border: calc(var(--baseSize) * 1.5) solid #000;
-      border-radius: 50%;
-      padding: var(--paddingX);
-      width: var(--size);
-      max-width: var(--maxSize);
-      height: var(--size);
-      max-height: var(--maxSize);
-      overflow: clip;
+<style define:vars={{ size, baseSize }}>
+  #clock-container {
+    --paddingX: 5px;
+    --maxSize: calc(100svw - var(--paddingX) * 2);
+    position: relative;
+    container-type: size;
+    margin-bottom: 2em;
+    border: calc(var(--baseSize) * 1.5) solid #000;
+    border-radius: 50%;
+    padding: var(--paddingX);
+    width: var(--size);
+    max-width: var(--maxSize);
+    height: var(--size);
+    max-height: var(--maxSize);
+    overflow: clip;
 
-      .line,
-      .number,
-      .pern,
-      #seconds,
-      #minutes,
-      #hours {
-        position: absolute;
-        inset: 0;
-      }
+    .line,
+    .number,
+    .pern,
+    #seconds,
+    #minutes,
+    #hours {
+      position: absolute;
+      inset: 0;
+    }
 
-      .content {
-        position: absolute;
-        transform: rotate(var(--rotation));
-        inset: 0;
+    .content {
+      position: absolute;
+      transform: rotate(var(--rotation));
+      inset: 0;
 
-        .line {
-          left: 50%;
-          transform: translateX(-50%);
-          background: #000;
-          width: var(--line-width);
-          height: var(--line-height);
-        }
-        .number {
-          --number-size: 86%;
-          display: flex;
-          top: calc((100% - var(--number-size)) / 2);
-          left: calc((100% - var(--number-size)) / 2);
-          justify-content: center;
-          width: var(--number-size);
-          height: var(--number-size);
-          text-align: center;
-
-          span {
-            position: absolute;
-            transform: rotate(calc(var(--rotation) * -1));
-            font-weight: 600;
-            font-size: 0.4em;
-          }
-        }
-        @container (min-width: 2.5rem) {
-          .number span {
-            font-size: 0.6em;
-          }
-        }
-        @container (min-width: 5rem) {
-          .number span {
-            font-size: 0.8em;
-          }
-        }
-        @container (min-width: 8rem) {
-          .number span {
-            font-size: 1em;
-          }
-        }
-        @container (min-width: 11rem) {
-          .number span {
-            font-size: 1.2em;
-          }
-        }
-        @container (min-width: 15rem) {
-          .number span {
-            font-size: 1.4em;
-          }
-        }
-
-        @container (min-width: 19rem) {
-          .number span {
-            font-size: 1.8em;
-          }
-        }
-        @container (min-width: 23rem) {
-          .number span {
-            font-size: 2em;
-          }
-        }
-        @container (min-width: 27rem) {
-          .number span {
-            font-size: 2.6em;
-          }
-        }
-        @container (min-width: 33rem) {
-          .number span {
-            font-size: 3em;
-          }
-        }
-        @container (min-width: 38rem) {
-          .number span {
-            font-size: 3.5em;
-          }
-        }
-        @container (min-width: 44rem) {
-          .number span {
-            font-size: 4em;
-          }
-        }
-        @container (min-width: 49rem) {
-          .number {
-            --number-size: 88%;
-            span {
-              font-size: 5em;
-            }
-          }
-        }
-      }
-      .pern,
-      #seconds,
-      #minutes,
-      #hours {
-        top: 50%;
+      .line {
         left: 50%;
-        transform: translate(-50%, -50%);
-      }
-      .pern {
-        --pern-size: calc(var(--baseSize) * 3);
-        z-index: 20;
-        border-radius: 50%;
-        background: #f00;
-        width: var(--pern-size);
-        height: var(--pern-size);
-      }
-      #seconds,
-      #minutes,
-      #hours {
-        display: block;
-        transform-origin: center bottom;
-        z-index: 10;
+        transform: translateX(-50%);
         background: #000;
-        &::after {
-          --after_height: 40%;
+        width: var(--line-width);
+        height: var(--line-height);
+      }
+      .number {
+        --number-size: 86%;
+        display: flex;
+        top: calc((100% - var(--number-size)) / 2);
+        left: calc((100% - var(--number-size)) / 2);
+        justify-content: center;
+        width: var(--number-size);
+        height: var(--number-size);
+        text-align: center;
+
+        span {
           position: absolute;
-          bottom: calc(var(--after_height) * -1);
-          left: 0;
-          transform: translateX(-25%);
-          clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
-          width: 200%;
-          height: var(--after_height);
-          content: '';
+          transform: rotate(calc(var(--rotation) * -1));
+          font-weight: 600;
+          font-size: 0.4em;
         }
       }
-      #hours,
-      #minutes {
-        clip-path: polygon(40% 0, 60% 0%, 100% 140%, 0 140%);
-        transition: 1s;
-        width: calc(var(--size) * 0.02);
-        &::after {
-          background: #000;
+      @container (min-width: 2.5rem) {
+        .number span {
+          font-size: 0.6em;
         }
       }
-      #hours {
-        background: #000;
-        height: 30%;
-      }
-      #minutes {
-        z-index: 11;
-        background: #000;
-        height: 40%;
-      }
-      #seconds {
-        z-index: 12;
-        background: #f00;
-        width: calc(var(--size) * 0.005);
-        height: 35%;
-        &::after {
-          background: #f00;
+      @container (min-width: 5rem) {
+        .number span {
+          font-size: 0.8em;
         }
       }
-      #date {
-        --date-size: 40%;
-        position: absolute;
-        top: calc((100% - var(--date-size)) / 2);
-        left: calc((100% - var(--date-size)) / 2);
-        transform: rotate(90deg);
-        width: var(--date-size);
-        height: var(--date-size);
+      @container (min-width: 8rem) {
+        .number span {
+          font-size: 1em;
+        }
+      }
+      @container (min-width: 11rem) {
+        .number span {
+          font-size: 1.2em;
+        }
+      }
+      @container (min-width: 15rem) {
+        .number span {
+          font-size: 1.4em;
+        }
+      }
 
-        .content {
-          display: none;
-          justify-content: center;
-          align-items: center;
-          transform: rotate(-90deg);
-          margin: 0 auto;
-          border: 0.1em solid #000;
-          border-radius: 0.1em;
-          width: max-content;
-          height: max-content;
-          line-height: 1;
+      @container (min-width: 19rem) {
+        .number span {
+          font-size: 1.8em;
+        }
+      }
+      @container (min-width: 23rem) {
+        .number span {
+          font-size: 2em;
+        }
+      }
+      @container (min-width: 27rem) {
+        .number span {
+          font-size: 2.6em;
+        }
+      }
+      @container (min-width: 33rem) {
+        .number span {
+          font-size: 3em;
+        }
+      }
+      @container (min-width: 38rem) {
+        .number span {
+          font-size: 3.5em;
+        }
+      }
+      @container (min-width: 44rem) {
+        .number span {
+          font-size: 4em;
+        }
+      }
+      @container (min-width: 49rem) {
+        .number {
+          --number-size: 88%;
           span {
-            padding: 0.2em 0.4em;
-            font-weight: 600;
-          }
-          .day {
-            border-right: 0.1em solid #000;
-          }
-        }
-
-        @container (min-width: 5rem) {
-          .content {
-            display: flex;
-            span {
-              font-size: 0.35em;
-            }
-          }
-        }
-        @container (min-width: 7rem) {
-          --date-size: 45%;
-          .content span {
-            font-size: 0.4em;
-          }
-        }
-        @container (min-width: 9rem) {
-          --date-size: 50%;
-          .content span {
-            font-size: 0.5em;
-          }
-        }
-        @container (min-width: 11rem) {
-          .content {
-            span {
-              font-size: 0.6em;
-            }
-          }
-        }
-        @container (min-width: 15rem) {
-          .content span {
-            font-size: 0.7em;
-          }
-        }
-        @container (min-width: 19rem) {
-          .content span {
-            font-size: 0.9em;
-          }
-        }
-        @container (min-width: 23rem) {
-          --date-size: 53%;
-          .content span {
-            font-size: 1em;
-          }
-        }
-        @container (min-width: 27rem) {
-          .content span {
-            font-size: 1.2em;
-          }
-        }
-        @container (min-width: 33rem) {
-          .content span {
-            font-size: 1.4em;
-          }
-        }
-        @container (min-width: 38rem) {
-          .content span {
-            font-size: 1.6em;
-          }
-        }
-        @container (min-width: 44rem) {
-          .content span {
-            font-size: 1.8em;
-          }
-        }
-        @container (min-width: 50rem) {
-          .content span {
-            font-size: 2.2em;
+            font-size: 5em;
           }
         }
       }
     }
-  </style>
+    .pern,
+    #seconds,
+    #minutes,
+    #hours {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .pern {
+      --pern-size: calc(var(--baseSize) * 3);
+      z-index: 20;
+      border-radius: 50%;
+      background: #f00;
+      width: var(--pern-size);
+      height: var(--pern-size);
+    }
+    #seconds,
+    #minutes,
+    #hours {
+      display: block;
+      transform-origin: center bottom;
+      z-index: 10;
+      background: #000;
+      &::after {
+        --after_height: 40%;
+        position: absolute;
+        bottom: calc(var(--after_height) * -1);
+        left: 0;
+        transform: translateX(-25%);
+        clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
+        width: 200%;
+        height: var(--after_height);
+        content: '';
+      }
+    }
+    #hours,
+    #minutes {
+      clip-path: polygon(40% 0, 60% 0%, 100% 140%, 0 140%);
+      transition: 1s;
+      width: calc(var(--size) * 0.02);
+      &::after {
+        background: #000;
+      }
+    }
+    #hours {
+      background: #000;
+      height: 30%;
+    }
+    #minutes {
+      z-index: 11;
+      background: #000;
+      height: 40%;
+    }
+    #seconds {
+      z-index: 12;
+      background: #f00;
+      width: calc(var(--size) * 0.005);
+      height: 35%;
+      &::after {
+        background: #f00;
+      }
+    }
+    #date {
+      --date-size: 40%;
+      position: absolute;
+      top: calc((100% - var(--date-size)) / 2);
+      left: calc((100% - var(--date-size)) / 2);
+      transform: rotate(90deg);
+      width: var(--date-size);
+      height: var(--date-size);
 
-  <script>
-    const container = document.getElementById(
-      'clock-container'
-    ) as HTMLDivElement;
-    const seconds = container.querySelector('#seconds') as HTMLDivElement;
-    const minutes = container.querySelector('#minutes') as HTMLDivElement;
-    const hours = container.querySelector('#hours') as HTMLDivElement;
-    const numbers = container.querySelectorAll(
-      '.number span'
-    ) as NodeListOf<HTMLDivElement>;
-    const dayEl = container.querySelector('.day') as HTMLSpanElement;
-    const monthEl = container.querySelector('.month') as HTMLSpanElement;
+      .content {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        transform: rotate(-90deg);
+        margin: 0 auto;
+        border: 0.1em solid #000;
+        border-radius: 0.1em;
+        width: max-content;
+        height: max-content;
+        line-height: 1;
+        span {
+          padding: 0.2em 0.4em;
+          font-weight: 600;
+        }
+        .day {
+          border-right: 0.1em solid #000;
+        }
+      }
 
-    const containerWidth = container.clientWidth;
-    console.log('🚀 ~ :259 ~ containerWidth:', containerWidth);
+      @container (min-width: 5rem) {
+        .content {
+          display: flex;
+          span {
+            font-size: 0.35em;
+          }
+        }
+      }
+      @container (min-width: 7rem) {
+        --date-size: 45%;
+        .content span {
+          font-size: 0.4em;
+        }
+      }
+      @container (min-width: 9rem) {
+        --date-size: 50%;
+        .content span {
+          font-size: 0.5em;
+        }
+      }
+      @container (min-width: 11rem) {
+        .content {
+          span {
+            font-size: 0.6em;
+          }
+        }
+      }
+      @container (min-width: 15rem) {
+        .content span {
+          font-size: 0.7em;
+        }
+      }
+      @container (min-width: 19rem) {
+        .content span {
+          font-size: 0.9em;
+        }
+      }
+      @container (min-width: 23rem) {
+        --date-size: 53%;
+        .content span {
+          font-size: 1em;
+        }
+      }
+      @container (min-width: 27rem) {
+        .content span {
+          font-size: 1.2em;
+        }
+      }
+      @container (min-width: 33rem) {
+        .content span {
+          font-size: 1.4em;
+        }
+      }
+      @container (min-width: 38rem) {
+        .content span {
+          font-size: 1.6em;
+        }
+      }
+      @container (min-width: 44rem) {
+        .content span {
+          font-size: 1.8em;
+        }
+      }
+      @container (min-width: 50rem) {
+        .content span {
+          font-size: 2.2em;
+        }
+      }
+    }
+    .brand {
+      --brand-size: 50%;
 
-    // day and month
-    const day = new Date().getDate();
-    const month = new Date().toLocaleString('default', { month: 'short' });
-    dayEl.textContent = day.toString();
-    monthEl.textContent = month;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: var(--brand-size);
+      height: var(--brand-size);
+      span {
+        position: absolute;
+        bottom: 5%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        color: navy;
+        font-weight: 400;
+        font-size: 0.32em;
+        font-family: 'Italianno', serif;
+        text-align: center;
+      }
+    }
+    @container (min-width: 4rem) {
+      .brand span {
+        bottom: 2%;
+        font-size: 0.5em;
+      }
+    }
+    @container (min-width: 6rem) {
+      .brand span {
+        font-size: 0.6em;
+      }
+    }
+    @container (min-width: 8rem) {
+      .brand span {
+        font-size: 0.8em;
+      }
+    }
+    @container (min-width: 10rem) {
+      .brand span {
+        bottom: 0;
+        font-size: 1em;
+      }
+    }
+    @container (min-width: 14rem) {
+      .brand span {
+        font-size: 1.4em;
+      }
+    }
+    @container (min-width: 17.5rem) {
+      .brand span {
+        font-size: 1.6em;
+      }
+    }
+    @container (min-width: 21.5rem) {
+      .brand span {
+        font-size: 1.8em;
+      }
+    }
+    @container (min-width: 25.5rem) {
+      .brand span {
+        font-size: 2em;
+      }
+    }
+    @container (min-width: 28rem) {
+      .brand span {
+        font-size: 2.4em;
+      }
+    }
+    @container (min-width: 33rem) {
+      .brand span {
+        font-size: 2.8em;
+      }
+    }
+    @container (min-width: 38rem) {
+      .brand span {
+        font-size: 3.2em;
+      }
+    }
+    @container (min-width: 43rem) {
+      .brand span {
+        font-size: 3.6em;
+      }
+    }
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5em;
+      select {
+        border: 0.1em solid #000;
+        border-radius: 0.1em;
+        background: #fff;
+        padding: 0.2em 0.5em;
+        font-weight: 600;
+      }
+    }
+  }
+</style>
 
-    const interval = +container.dataset.interval!;
+<script>
+  const container = document.getElementById(
+    'clock-container'
+  ) as HTMLDivElement;
+  const seconds = container.querySelector('#seconds') as HTMLDivElement;
+  const minutes = container.querySelector('#minutes') as HTMLDivElement;
+  const hours = container.querySelector('#hours') as HTMLDivElement;
+  const numbers = container.querySelectorAll(
+    '.number span'
+  ) as NodeListOf<HTMLDivElement>;
+  const dayEl = container.querySelector('.day') as HTMLSpanElement;
+  const monthEl = container.querySelector('.month') as HTMLSpanElement;
+  const form = document.querySelector('form')! as HTMLFormElement;
+  const selectNumericStyle = form.querySelector(
+    'select#numeric_style'
+  )! as HTMLSelectElement;
 
-    setInterval(() => {
-      const time = new Date();
-      const timeHours = time.getHours();
-      const timeMinutes = time.getMinutes();
-      const timeSeconds = time.getSeconds();
-      const timeMilliseconds = time.getMilliseconds();
+  // number style
+  // prettier-ignore
+  const romans = [ 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII',
+  ];
 
-      const hoursDegrees =
-        (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
-      hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
+  function setNumberStyle(value: string) {
+    if (value === 'arabic') {
+      numbers.forEach((number, idx) => {
+        number.textContent = (idx + 1).toString();
+      });
+    } else {
+      numbers.forEach((number, idx) => {
+        number.textContent = romans[idx];
+      });
+    }
+  }
+  selectNumericStyle.addEventListener('change', (e: any) => {
+    const style = e.currentTarget?.value;
+    setNumberStyle(style);
+  });
 
-      const minutesDegrees = ((timeMinutes * 6) % 360) + timeSeconds / 10;
-      minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
+  setNumberStyle(selectNumericStyle.value);
+  ////////////////////////
 
-      const milliSecondsDegrees =
-        interval < 1000
-          ? Math.floor((timeSeconds * 1000 + timeMilliseconds) / 1.6666) / 100
-          : interval === 1000
-            ? timeSeconds * 6
-            : 0;
+  // day and month
+  const day = new Date().getDate();
+  const month = new Date().toLocaleString('default', { month: 'short' });
+  dayEl.textContent = day.toString();
+  monthEl.textContent = month;
 
-      seconds.style.transform = `translate(-50%, -100%) rotate(${milliSecondsDegrees}deg)`;
-      // console.log('🚀 ~ :81 ~ time:', time);
-      // console.log('🚀 ~ :139 ~ milliSecondsDegrees:', milliSecondsDegrees);
-    }, interval);
-  </script>
-</div>
+  const interval = +container.dataset.interval!;
+
+  setInterval(() => {
+    const time = new Date();
+    const timeHours = time.getHours();
+    const timeMinutes = time.getMinutes();
+    const timeSeconds = time.getSeconds();
+    const timeMilliseconds = time.getMilliseconds();
+
+    const hoursDegrees = (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
+    hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
+
+    const minutesDegrees = ((timeMinutes * 6) % 360) + timeSeconds / 10;
+    minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
+
+    const milliSecondsDegrees =
+      interval < 1000
+        ? Math.floor((timeSeconds * 1000 + timeMilliseconds) / 1.6666) / 100
+        : interval === 1000
+          ? timeSeconds * 6
+          : 0;
+
+    seconds.style.transform = `translate(-50%, -100%) rotate(${milliSecondsDegrees}deg)`;
+    // console.log('🚀 ~ :81 ~ time:', time);
+    // console.log('🚀 ~ :139 ~ milliSecondsDegrees:', milliSecondsDegrees);
+  }, interval);
+</script>
