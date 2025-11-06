@@ -106,10 +106,6 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
     max-height: var(--maxSize);
     overflow: clip;
     color: #000;
-    /* @media (prefers-color-scheme: dark) {
-      background: #000;
-      color: #fff;
-    } */
 
     .line,
     .number,
@@ -475,7 +471,7 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       transform: translate(-50%, -50%);
       width: var(--ampm-size);
       height: var(--ampm-size);
-      font-weight: 400;
+      font-weight: 600;
       span {
         --span-size: 2.5em;
         display: flex;
@@ -636,11 +632,9 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
     mutations.forEach((mutation) => {
       if (mutation.attributeName === 'data-number-style') {
         const numberStyle = container.dataset.numberStyle!;
-        // console.log('🚀 ~ :498 ~ numberStyle:', numberStyle);
         setNumberStyle(numberStyle);
       } else if (mutation.attributeName === 'data-seconds-style') {
         const secondsStyle = container.dataset.secondsStyle!;
-        console.log('🚀 ~ :506 ~ secondsStyle:', secondsStyle);
         setSecondsStyle(secondsStyle);
       }
     });
