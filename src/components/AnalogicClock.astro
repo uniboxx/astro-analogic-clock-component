@@ -281,27 +281,25 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       }
     }
     #date {
-      --date-size: 40%;
+      --date-size: 60%;
+      display: flex;
       position: absolute;
       top: calc((100% - var(--date-size)) / 2);
       left: calc((100% - var(--date-size)) / 2);
-      transform: rotate(90deg);
+      justify-content: center;
+      align-items: center;
       width: var(--date-size);
       height: var(--date-size);
 
       .content {
         display: none;
-        justify-content: center;
-        align-items: center;
-        transform: rotate(-90deg);
-        margin: 0 auto;
         border: 0.1em solid #000;
-        border-radius: 0.1em;
+        border-radius: 0.4em;
         width: max-content;
         height: max-content;
         line-height: 1;
         span {
-          padding: 0.2em 0.4em;
+          padding: 0.4em 0.8em;
           font-weight: 600;
         }
         .day {
@@ -310,9 +308,9 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       }
 
       @container (min-width: 7rem) {
-        --date-size: 45%;
+        --date-size: 60%;
         .content {
-          display: flex;
+          display: block;
           span {
             font-size: 0.5em;
           }
@@ -581,6 +579,12 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       #hours,
       #minutes {
         background: #fff;
+      }
+      #date {
+        span {
+          background: #fff;
+          color: #000;
+        }
       }
       #brand span {
         color: #fff;

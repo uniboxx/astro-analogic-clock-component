@@ -58,34 +58,29 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   ) as HTMLDivElement;
   const form = document.querySelector('form') as HTMLFormElement;
 
+  function setData(key: string, e: Event) {
+    const target = e.currentTarget as HTMLSelectElement;
+    console.log('🚀 ~ :63 ~ setData ~ target:', target);
+    const value = target?.value;
+    clockContainer.dataset[key] = value;
+  }
+
   // number style
   const number_style = form.querySelector('#number_style') as HTMLSelectElement;
   number_style.selectedIndex = 0;
-  number_style.addEventListener('change', (e) => {
-    const target = e.currentTarget as HTMLSelectElement;
-    const value = target?.value;
-    clockContainer.dataset.numberStyle = value;
-  });
+  number_style.addEventListener('change', setData.bind(null, 'numberStyle'));
 
   // seconds style
   const seconds_style = form.querySelector(
     '#seconds_style'
   ) as HTMLSelectElement;
   seconds_style.selectedIndex = 0;
-  seconds_style.addEventListener('change', (e) => {
-    const target = e.currentTarget as HTMLSelectElement;
-    const value = target?.value;
-    clockContainer.dataset.secondsStyle = value;
-  });
+  seconds_style.addEventListener('change', setData.bind(null, 'secondsStyle'));
 
   // theme
   const theme = form.querySelector('#theme') as HTMLSelectElement;
   const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
   theme.selectedIndex = isDarkMode ? 1 : 0;
   clockContainer.dataset.theme = isDarkMode ? 'dark' : 'light';
-  theme.addEventListener('change', (e) => {
-    const target = e.currentTarget as HTMLSelectElement;
-    const value = target?.value;
-    clockContainer.dataset.theme = value;
-  });
+  theme.addEventListener('change', setData.bind(null, 'theme'));
 </script>
