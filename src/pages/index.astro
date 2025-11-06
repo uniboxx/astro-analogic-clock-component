@@ -5,4 +5,69 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
 <BaseLayout title="Analogic Clock">
   <AnalogicClock />
+  <form>
+    <label for="number_style">
+      Number style
+      <select name="number_style" id="number_style" value="arabic">
+        <option value="arabic">Arabic</option>
+        <option value="roman">Roman</option>
+      </select>
+    </label>
+    <label for="seconds_style">
+      Seconds style
+      <select name="seconds_style" id="seconds_style">
+        <option value="tick" selected>Tick</option>
+        <option value="smooty">Smooty</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+  </form>
 </BaseLayout>
+
+<style>
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5em;
+      select {
+        border: 0.1em solid #000;
+        border-radius: 0.1em;
+        background: #fff;
+        padding: 0.2em 0.5em;
+        font-weight: 600;
+      }
+    }
+  }
+</style>
+
+<script>
+  const clockContainer = document.getElementById(
+    'clock-container'
+  ) as HTMLDivElement;
+  const form = document.querySelector('form') as HTMLFormElement;
+
+  // number style
+  const number_style = form.querySelector('#number_style') as HTMLSelectElement;
+  number_style.selectedIndex = 0;
+  number_style.addEventListener('change', (e) => {
+    const target = e.currentTarget as HTMLSelectElement;
+    const value = target?.value;
+    clockContainer.dataset.numberStyle = value;
+  });
+
+  // seconds style
+  const seconds_style = form.querySelector(
+    '#seconds_style'
+  ) as HTMLSelectElement;
+  seconds_style.selectedIndex = 0;
+  seconds_style.addEventListener('change', (e) => {
+    const target = e.currentTarget as HTMLSelectElement;
+    const value = target?.value;
+    clockContainer.dataset.secondsStyle = value;
+  });
+</script>

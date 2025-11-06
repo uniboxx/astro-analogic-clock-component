@@ -1,4 +1,5 @@
 ---
+export const prerender = false;
 /* 
 INFORMATION
 set 
@@ -10,13 +11,15 @@ interface Props {
   class?: string;
   size?: string;
   interval?: string | number;
-  numberStyle?: 'normal' | 'roman';
+  numberStyle?: 'arabic' | 'roman';
+  secondsStyle?: 'tick' | 'smooty' | 'off';
 }
 const {
   class: classList,
   size = 'min(20rem, 100svw)',
   interval = '1000ms',
-  numberStyle = 'normal',
+  numberStyle = 'arabic',
+  secondsStyle = 'tick',
   ...attrs
 } = Astro.props;
 
@@ -26,12 +29,15 @@ const regex = /(?<measure>[\d\.]+)(?<intervalUnit>s|ms)?/;
 const sizeResult = size.match(regex)!;
 const sizeMeasure = +sizeResult.groups?.measure!;
 const baseSize = `${sizeMeasure / 100}em`;
-
-// number style
-// prettier-ignore
 ---
 
-<div id="clock-container" class:list={[classList]} {...attrs}>
+<div
+  id="clock-container"
+  class:list={[classList]}
+  data-number-style={numberStyle}
+  data-seconds-style={secondsStyle}
+  {...attrs}
+>
   {
     Array.from({ length: 60 }).map((_, idx) => {
       const rotation = (idx + 1) * 6;
@@ -65,23 +71,6 @@ const baseSize = `${sizeMeasure / 100}em`;
   </div>
   <div class="brand"><span>By Unibox</span></div>
 </div>
-<form>
-  <label for="numeric_style">
-    Numeric style
-    <select name="numeric_style" id="numeric_style" value="arabic">
-      <option value="arabic">Arabic</option>
-      <option value="roman">Roman</option>
-    </select>
-  </label>
-  <label for="seconds_style">
-    Seconds style
-    <select name="seconds_style" id="seconds_style">
-      <option value="tick" selected>Tick</option>
-      <option value="smooty">Smooty</option>
-      <option value="off">Off</option>
-    </select>
-  </label>
-</form>
 
 <style define:vars={{ size, baseSize }}>
   #clock-container {
@@ -466,54 +455,34 @@ const baseSize = `${sizeMeasure / 100}em`;
       }
     }
   }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    label {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5em;
-      select {
-        border: 0.1em solid #000;
-        border-radius: 0.1em;
-        background: #fff;
-        padding: 0.2em 0.5em;
-        font-weight: 600;
-      }
-    }
-  }
 </style>
 
 <script>
   const container = document.getElementById(
     'clock-container'
   ) as HTMLDivElement;
+  // time elements
   const hours = container.querySelector('#hours') as HTMLDivElement;
   const minutes = container.querySelector('#minutes') as HTMLDivElement;
   const seconds = container.querySelector('#seconds') as HTMLDivElement;
-  const pern = container.querySelector('#pern') as HTMLDivElement;
+
+  // date elements
+  const dayEl = container.querySelector('.day') as HTMLSpanElement;
+  const monthEl = container.querySelector('.month') as HTMLSpanElement;
+
+  // const selectSecondsStyle = form.querySelector(
+  //   'select#seconds_style'
+  // )! as HTMLSelectElement;
+  // selectSecondsStyle.selectedIndex = 0;
+
+  // number style
   const numbers = container.querySelectorAll(
     '.number span'
   ) as NodeListOf<HTMLDivElement>;
-  const dayEl = container.querySelector('.day') as HTMLSpanElement;
-  const monthEl = container.querySelector('.month') as HTMLSpanElement;
-  const form = document.querySelector('form')! as HTMLFormElement;
-  const selectNumericStyle = form.querySelector(
-    'select#numeric_style'
-  )! as HTMLSelectElement;
-  const selectSecondsStyle = form.querySelector(
-    'select#seconds_style'
-  )! as HTMLSelectElement;
-  selectSecondsStyle.selectedIndex = 0;
-
-  // number style
+  const numberStyle = container.dataset.numberStyle!;
   // prettier-ignore
   const romans = [ 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII',
   ];
-
   function setNumberStyle(value: string) {
     if (value === 'arabic') {
       numbers.forEach((number, idx) => {
@@ -525,18 +494,30 @@ const baseSize = `${sizeMeasure / 100}em`;
       });
     }
   }
-  selectNumericStyle.addEventListener('change', (e: any) => {
-    const style = e.currentTarget?.value;
-    setNumberStyle(style);
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'data-number-style') {
+        const numberStyle = container.dataset.numberStyle!;
+        // console.log('🚀 ~ :498 ~ numberStyle:', numberStyle);
+        setNumberStyle(numberStyle);
+      } else if (mutation.attributeName === 'data-seconds-style') {
+        const secondsStyle = container.dataset.secondsStyle!;
+        console.log('🚀 ~ :506 ~ secondsStyle:', secondsStyle);
+        setSecondsStyle(secondsStyle);
+      }
+    });
   });
+  observer.observe(container, { attributes: true });
 
-  setNumberStyle(selectNumericStyle.value);
+  setNumberStyle(numberStyle);
 
   // seconds style
-  let interval: number, clock: any;
-
   let out1: any = null;
   let out2: any = null;
+  let interval: number, clock: any;
+  const secondsStyle = container.dataset.secondsStyle!;
+  setSecondsStyle(secondsStyle);
+
   function clearTimeouts() {
     if (out1) {
       clearTimeout(out1);
@@ -567,13 +548,6 @@ const baseSize = `${sizeMeasure / 100}em`;
       }
     }
   }
-  selectSecondsStyle.addEventListener('change', (e: any) => {
-    const style = e.currentTarget?.value;
-    setSecondsStyle(style);
-  });
-
-  setSecondsStyle(selectSecondsStyle.value);
-  ////////////////////////
 
   // day and month
   const day = new Date().getDate();
@@ -611,15 +585,15 @@ const baseSize = `${sizeMeasure / 100}em`;
 
       // logs
       if (import.meta.env.DEV) {
-        console.log('🚀 ~ :81 ~ time:', time);
-        console.log(
-          '🚀 ~ :577 ~ updateClock ~ minutesDegrees:',
-          minutesDegrees
-        );
-        console.log(
-          '🚀 ~ :605 ~ updateClock ~ secondsDegrees:',
-          secondsDegrees
-        );
+        // console.log('🚀 ~ :81 ~ time:', time);
+        // console.log(
+        //   '🚀 ~ :577 ~ updateClock ~ minutesDegrees:',
+        //   minutesDegrees
+        // );
+        // console.log(
+        //   '🚀 ~ :605 ~ updateClock ~ secondsDegrees:',
+        //   secondsDegrees
+        // );
       }
     }, interval);
   }
