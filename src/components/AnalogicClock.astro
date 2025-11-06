@@ -29,19 +29,13 @@ const {
   ...attrs
 } = Astro.props;
 
-const regex = /(?<measure>[\d\.]+)(?<intervalUnit>s|ms)?/;
-
-// size
-const sizeResult = size.match(regex)!;
-const sizeMeasure = +sizeResult.groups?.measure!;
-const baseSize = `${sizeMeasure / 100}em`;
-// am/pm
-const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
+const variables = `--size: ${size};`;
 ---
 
 <div
   id="clock-container"
   class:list={[classList]}
+  style={variables}
   data-number-style={numberStyle}
   data-seconds-style={secondsStyle}
   data-theme={theme}
@@ -75,28 +69,30 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
   {
     ampm && (
       <div id="ampm">
-        <span>{amPm}</span>
+        <span />
       </div>
     )
   }
   <div id="date">
     <div class="content">
       <span class="day"></span>
+      <span class="separator"></span>
       <span class="month"></span>
     </div>
   </div>
   <div id="brand"><span>{brand}</span></div>
 </div>
 
-<style define:vars={{ size, baseSize }}>
+<style>
   #clock-container {
     --paddingX: 5px;
     --maxSize: calc(100svw - var(--paddingX) * 2);
     position: relative;
     container-type: size;
     margin-bottom: 2em;
-    outline: calc(var(--baseSize) * 0.5) solid #fff;
-    border: calc(var(--baseSize) * 1.5) solid #000;
+    outline: calc(var(--containerWidth) / 150) solid #fff;
+    border: calc(var(--containerWidth) / 50) solid;
+    border-color: #000;
     border-radius: 50%;
     background: #fff;
     padding: var(--paddingX);
@@ -143,76 +139,7 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
           position: absolute;
           transform: rotate(calc(var(--rotation) * -1));
           font-weight: 600;
-          font-size: 0.4em;
-        }
-      }
-      @container (min-width: 2.5rem) {
-        .number span {
-          font-size: 0.6em;
-        }
-      }
-      @container (min-width: 5rem) {
-        .number span {
-          font-size: 0.8em;
-        }
-      }
-      @container (min-width: 8rem) {
-        .number span {
-          font-size: 1em;
-        }
-      }
-      @container (min-width: 11rem) {
-        .number span {
-          font-size: 1.3em;
-        }
-      }
-      @container (min-width: 15rem) {
-        .number span {
-          font-size: 1.6em;
-        }
-      }
-
-      @container (min-width: 19rem) {
-        .number span {
-          font-size: 1.8em;
-        }
-      }
-      @container (min-width: 23rem) {
-        .number span {
-          font-size: 2em;
-        }
-      }
-      @container (min-width: 27rem) {
-        .number span {
-          font-size: 2.4em;
-        }
-      }
-      @container (min-width: 31rem) {
-        .number span {
-          font-size: 2.8em;
-        }
-      }
-      @container (min-width: 35rem) {
-        .number span {
-          font-size: 3.2em;
-        }
-      }
-      @container (min-width: 39rem) {
-        .number span {
-          font-size: 3.6em;
-        }
-      }
-      @container (min-width: 44rem) {
-        .number span {
-          font-size: 4em;
-        }
-      }
-      @container (min-width: 48rem) {
-        .number {
-          --number-size: 88%;
-          span {
-            font-size: 4.5em;
-          }
+          font-size: calc(var(--containerWidth) / 10);
         }
       }
     }
@@ -225,7 +152,7 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       transform: translate(-50%, -50%);
     }
     #pern {
-      --pern-size: calc(var(--baseSize) * 4);
+      --pern-size: calc(var(--containerWidth) / 20);
       z-index: 20;
       border-radius: 50%;
       background: #f00;
@@ -281,92 +208,50 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       }
     }
     #date {
-      --date-size: 60%;
-      display: flex;
+      --date-size: 50%;
+      display: none;
       position: absolute;
-      top: calc((100% - var(--date-size)) / 2);
-      left: calc((100% - var(--date-size)) / 2);
-      justify-content: center;
-      align-items: center;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: var(--date-size);
       height: var(--date-size);
 
       .content {
-        display: none;
-        border: 0.1em solid #000;
-        border-radius: 0.4em;
+        display: flex;
+        position: absolute;
+        top: 50%;
+        left: 70%;
+        justify-content: center;
+        align-items: center;
+        transform: translateY(-50%);
+        border-radius: 0.5em;
+        background: #fff;
         width: max-content;
         height: max-content;
-        line-height: 1;
+        color: #000;
+
         span {
-          padding: 0.4em 0.8em;
+          padding: 0.1em 0.4em;
           font-weight: 600;
-        }
-        .day {
-          border-right: 0.1em solid #000;
+          font-size: calc(var(--containerWidth) / 18);
+
+          &.separator {
+            display: inline-block;
+            background: #000;
+            padding: 0;
+            width: 0.1em;
+            height: 1.7em;
+          }
         }
       }
 
       @container (min-width: 7rem) {
-        --date-size: 60%;
-        .content {
+        & {
+          /* display: flex;
+          justify-content: end;
+          align-items: center; */
           display: block;
-          span {
-            font-size: 0.5em;
-          }
-        }
-      }
-      @container (min-width: 9rem) {
-        .content span {
-          font-size: 0.5em;
-        }
-      }
-      @container (min-width: 11rem) {
-        .content {
-          span {
-            font-size: 0.6em;
-          }
-        }
-      }
-      @container (min-width: 15rem) {
-        .content span {
-          font-size: 0.8em;
-        }
-      }
-      @container (min-width: 19rem) {
-        .content span {
-          font-size: 0.9em;
-        }
-      }
-      @container (min-width: 23rem) {
-        --date-size: 53%;
-        .content span {
-          font-size: 1em;
-        }
-      }
-      @container (min-width: 27rem) {
-        .content span {
-          font-size: 1.2em;
-        }
-      }
-      @container (min-width: 33rem) {
-        .content span {
-          font-size: 1.4em;
-        }
-      }
-      @container (min-width: 38rem) {
-        .content span {
-          font-size: 1.6em;
-        }
-      }
-      @container (min-width: 44rem) {
-        .content span {
-          font-size: 1.8em;
-        }
-      }
-      @container (min-width: 50rem) {
-        .content span {
-          font-size: 2.2em;
         }
       }
     }
@@ -387,7 +272,7 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
         width: 100%;
         color: hsl(240, 100%, 50%);
         font-weight: 400;
-        font-size: 0.32em;
+        font-size: calc(var(--containerWidth) / 10);
         font-family: 'Italianno', serif;
         text-align: center;
         text-shadow:
@@ -397,71 +282,9 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
           0 0 4em hsl(204 42% 70%);
       }
     }
-    @container (min-width: 4rem) {
-      #brand span {
-        bottom: 2%;
-        font-size: 0.5em;
-      }
-    }
-    @container (min-width: 6rem) {
-      #brand span {
-        font-size: 0.6em;
-      }
-    }
-    @container (min-width: 8rem) {
-      #brand span {
-        font-size: 0.8em;
-      }
-    }
-    @container (min-width: 10rem) {
-      #brand span {
-        bottom: 0;
-        font-size: 1em;
-      }
-    }
-    @container (min-width: 14rem) {
-      #brand span {
-        font-size: 1.4em;
-      }
-    }
-    @container (min-width: 17.5rem) {
-      #brand span {
-        font-size: 1.6em;
-      }
-    }
-    @container (min-width: 21.5rem) {
-      #brand span {
-        font-size: 1.8em;
-      }
-    }
-    @container (min-width: 25.5rem) {
-      #brand span {
-        font-size: 2em;
-      }
-    }
-    @container (min-width: 28rem) {
-      #brand span {
-        font-size: 2.4em;
-      }
-    }
-    @container (min-width: 33rem) {
-      #brand span {
-        font-size: 2.8em;
-      }
-    }
-    @container (min-width: 38rem) {
-      #brand span {
-        font-size: 3.2em;
-      }
-    }
-    @container (min-width: 43rem) {
-      #brand span {
-        font-size: 3.6em;
-      }
-    }
 
     #ampm {
-      --ampm-size: 55%;
+      --ampm-size: 60%;
       display: none;
       position: absolute;
       top: 50%;
@@ -469,101 +292,29 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       transform: translate(-50%, -50%);
       width: var(--ampm-size);
       height: var(--ampm-size);
-      font-weight: 600;
       span {
         --span-size: 2.5em;
         display: flex;
         position: absolute;
-        top: 50%;
         left: 0;
         justify-content: center;
         align-items: center;
-        transform: translateY(-50%);
         border-radius: 50%;
         background: #000;
         width: var(--span-size);
         height: var(--span-size);
         color: #fff;
+        font-weight: 600;
+        font-size: calc(var(--containerWidth) / 22);
       }
     }
     @container (min-width: 7rem) {
       #ampm {
-        display: block;
-        span {
-          font-size: 0.4em;
-        }
+        display: flex;
+        align-items: center;
       }
     }
-    @container (min-width: 11rem) {
-      #ampm {
-        span {
-          font-size: 0.6em;
-        }
-      }
-    }
-    @container (min-width: 15rem) {
-      #ampm {
-        span {
-          font-size: 0.8em;
-        }
-      }
-    }
-    @container (min-width: 19rem) {
-      #ampm {
-        span {
-          font-size: 1em;
-        }
-      }
-    }
-    @container (min-width: 23rem) {
-      #ampm {
-        span {
-          font-size: 1.2em;
-        }
-      }
-    }
-    @container (min-width: 27rem) {
-      #ampm {
-        span {
-          font-size: 1.4em;
-        }
-      }
-    }
-    @container (min-width: 31rem) {
-      #ampm {
-        span {
-          font-size: 1.6em;
-        }
-      }
-    }
-    @container (min-width: 35rem) {
-      #ampm {
-        span {
-          font-size: 1.8em;
-        }
-      }
-    }
-    @container (min-width: 39rem) {
-      #ampm {
-        span {
-          font-size: 2em;
-        }
-      }
-    }
-    @container (min-width: 43rem) {
-      #ampm {
-        span {
-          font-size: 2.2em;
-        }
-      }
-    }
-    @container (min-width: 48rem) {
-      #ampm {
-        span {
-          font-size: 2.4em;
-        }
-      }
-    }
+
     &.seconds-off {
       #pern {
         background: #000 !important;
@@ -573,19 +324,14 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       }
     }
     &[data-theme='dark'] {
-      border: calc(var(--baseSize) * 1.5) solid #fff;
+      border-color: #fff;
       background: #000;
       color: #fff;
       #hours,
       #minutes {
         background: #fff;
       }
-      #date {
-        span {
-          background: #fff;
-          color: #000;
-        }
-      }
+
       #brand span {
         color: #fff;
       }
@@ -605,13 +351,17 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
     'clock-container'
   ) as HTMLDivElement;
   // time elements
+  const ampm = container.querySelector('#ampm span') as HTMLSpanElement;
   const hours = container.querySelector('#hours') as HTMLDivElement;
   const minutes = container.querySelector('#minutes') as HTMLDivElement;
   const seconds = container.querySelector('#seconds') as HTMLDivElement;
-
   // date elements
   const dayEl = container.querySelector('.day') as HTMLSpanElement;
   const monthEl = container.querySelector('.month') as HTMLSpanElement;
+
+  // container width
+  const containerWidth = container.clientWidth;
+  console.log('🚀 ~ :606 ~ containerWidth:', containerWidth);
 
   // number style
   const numbers = container.querySelectorAll(
@@ -643,7 +393,20 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
       }
     });
   });
+
   observer.observe(container, { attributes: true });
+
+  const resizeObserver = new ResizeObserver((entries) => {
+    entries.forEach((entry) => {
+      const containerWidth = entry.contentRect.width;
+      console.log('🚀 ~ :643 ~ containerWidth:', containerWidth);
+      const roundedWidth = Math.round(containerWidth / 10) * 10;
+      console.log('🚀 ~ :647 ~ roundedWidth:', roundedWidth);
+      container.style.cssText += `--containerWidth: ${Math.round(roundedWidth)}px`;
+    });
+  });
+
+  resizeObserver.observe(container);
 
   setNumberStyle(numberStyle);
 
@@ -697,9 +460,13 @@ const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
     clock = setInterval(() => {
       const time = new Date();
       const timeHours = time.getHours();
+      const amPm = timeHours < 12 ? 'AM' : 'PM';
       const timeMinutes = time.getMinutes();
       const timeSeconds = time.getSeconds();
       const timeMilliseconds = time.getMilliseconds();
+
+      // am/pm
+      ampm.textContent = amPm;
 
       // hours degrees
       const hoursDegrees = timeHours * 30 + timeMinutes / 2;
