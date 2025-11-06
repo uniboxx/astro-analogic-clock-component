@@ -1,5 +1,4 @@
 ---
-export const prerender = false;
 /* 
 INFORMATION
 set 
@@ -13,13 +12,20 @@ interface Props {
   interval?: string | number;
   numberStyle?: 'arabic' | 'roman';
   secondsStyle?: 'tick' | 'smooty' | 'off';
+  ampm?: boolean;
+  brand?: string;
+  theme?: 'light' | 'dark';
 }
+
 const {
   class: classList,
   size = 'min(20rem, 100svw)',
   interval = '1000ms',
   numberStyle = 'arabic',
   secondsStyle = 'tick',
+  brand = 'By Unibox',
+  theme,
+  ampm = true,
   ...attrs
 } = Astro.props;
 
@@ -29,6 +35,8 @@ const regex = /(?<measure>[\d\.]+)(?<intervalUnit>s|ms)?/;
 const sizeResult = size.match(regex)!;
 const sizeMeasure = +sizeResult.groups?.measure!;
 const baseSize = `${sizeMeasure / 100}em`;
+// am/pm
+const amPm = new Date().getHours() < 12 ? 'AM' : 'PM';
 ---
 
 <div
@@ -36,6 +44,7 @@ const baseSize = `${sizeMeasure / 100}em`;
   class:list={[classList]}
   data-number-style={numberStyle}
   data-seconds-style={secondsStyle}
+  data-theme={theme}
   {...attrs}
 >
   {
@@ -63,13 +72,20 @@ const baseSize = `${sizeMeasure / 100}em`;
   <span id="minutes"></span>
   <span id="seconds"></span>
   <span id="pern"></span>
+  {
+    ampm && (
+      <div id="ampm">
+        <span>{amPm}</span>
+      </div>
+    )
+  }
   <div id="date">
     <div class="content">
       <span class="day"></span>
       <span class="month"></span>
     </div>
   </div>
-  <div class="brand"><span>By Unibox</span></div>
+  <div id="brand"><span>{brand}</span></div>
 </div>
 
 <style define:vars={{ size, baseSize }}>
@@ -79,14 +95,21 @@ const baseSize = `${sizeMeasure / 100}em`;
     position: relative;
     container-type: size;
     margin-bottom: 2em;
+    outline: calc(var(--baseSize) * 0.5) solid #fff;
     border: calc(var(--baseSize) * 1.5) solid #000;
     border-radius: 50%;
+    background: #fff;
     padding: var(--paddingX);
     width: var(--size);
     max-width: var(--maxSize);
     height: var(--size);
     max-height: var(--maxSize);
     overflow: clip;
+    color: #000;
+    /* @media (prefers-color-scheme: dark) {
+      background: #000;
+      color: #fff;
+    } */
 
     .line,
     .number,
@@ -219,7 +242,7 @@ const baseSize = `${sizeMeasure / 100}em`;
       transform: translate(-50%, -100%) rotate(var(--handRotation));
       transform-origin: center bottom;
       z-index: 10;
-      background: #000;
+
       &::after {
         --after_height: 40%;
         position: absolute;
@@ -235,18 +258,20 @@ const baseSize = `${sizeMeasure / 100}em`;
     #hours,
     #minutes {
       clip-path: polygon(40% 0, 60% 0%, 100% 140%, 0 140%);
+      background: #000;
       width: calc(var(--size) * 0.02);
       &::after {
-        background: #000;
+        background: inherit;
+      }
+      @media (prefers-color-scheme: dark) {
+        background: #fff;
       }
     }
     #hours {
-      background: #000;
       height: 30%;
     }
     #minutes {
       z-index: 11;
-      background: #000;
       height: 40%;
     }
     #seconds {
@@ -288,22 +313,16 @@ const baseSize = `${sizeMeasure / 100}em`;
         }
       }
 
-      @container (min-width: 5rem) {
+      @container (min-width: 7rem) {
+        --date-size: 45%;
         .content {
           display: flex;
           span {
-            font-size: 0.35em;
+            font-size: 0.5em;
           }
         }
       }
-      @container (min-width: 7rem) {
-        --date-size: 45%;
-        .content span {
-          font-size: 0.4em;
-        }
-      }
       @container (min-width: 9rem) {
-        --date-size: 50%;
         .content span {
           font-size: 0.5em;
         }
@@ -357,7 +376,7 @@ const baseSize = `${sizeMeasure / 100}em`;
         }
       }
     }
-    .brand {
+    #brand {
       --brand-size: 50%;
 
       position: absolute;
@@ -385,65 +404,170 @@ const baseSize = `${sizeMeasure / 100}em`;
       }
     }
     @container (min-width: 4rem) {
-      .brand span {
+      #brand span {
         bottom: 2%;
         font-size: 0.5em;
       }
     }
     @container (min-width: 6rem) {
-      .brand span {
+      #brand span {
         font-size: 0.6em;
       }
     }
     @container (min-width: 8rem) {
-      .brand span {
+      #brand span {
         font-size: 0.8em;
       }
     }
     @container (min-width: 10rem) {
-      .brand span {
+      #brand span {
         bottom: 0;
         font-size: 1em;
       }
     }
     @container (min-width: 14rem) {
-      .brand span {
+      #brand span {
         font-size: 1.4em;
       }
     }
     @container (min-width: 17.5rem) {
-      .brand span {
+      #brand span {
         font-size: 1.6em;
       }
     }
     @container (min-width: 21.5rem) {
-      .brand span {
+      #brand span {
         font-size: 1.8em;
       }
     }
     @container (min-width: 25.5rem) {
-      .brand span {
+      #brand span {
         font-size: 2em;
       }
     }
     @container (min-width: 28rem) {
-      .brand span {
+      #brand span {
         font-size: 2.4em;
       }
     }
     @container (min-width: 33rem) {
-      .brand span {
+      #brand span {
         font-size: 2.8em;
       }
     }
     @container (min-width: 38rem) {
-      .brand span {
+      #brand span {
         font-size: 3.2em;
       }
     }
     @container (min-width: 43rem) {
-      .brand span {
+      #brand span {
         font-size: 3.6em;
+      }
+    }
+
+    #ampm {
+      --ampm-size: 55%;
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: var(--ampm-size);
+      height: var(--ampm-size);
+      font-weight: 400;
+      span {
+        --span-size: 2.5em;
+        display: flex;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        justify-content: center;
+        align-items: center;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background: #000;
+        width: var(--span-size);
+        height: var(--span-size);
+        color: #fff;
+      }
+    }
+    @container (min-width: 7rem) {
+      #ampm {
+        display: block;
+        span {
+          font-size: 0.4em;
+        }
+      }
+    }
+    @container (min-width: 11rem) {
+      #ampm {
+        span {
+          font-size: 0.6em;
+        }
+      }
+    }
+    @container (min-width: 15rem) {
+      #ampm {
+        span {
+          font-size: 0.8em;
+        }
+      }
+    }
+    @container (min-width: 19rem) {
+      #ampm {
+        span {
+          font-size: 1em;
+        }
+      }
+    }
+    @container (min-width: 23rem) {
+      #ampm {
+        span {
+          font-size: 1.2em;
+        }
+      }
+    }
+    @container (min-width: 27rem) {
+      #ampm {
+        span {
+          font-size: 1.4em;
+        }
+      }
+    }
+    @container (min-width: 31rem) {
+      #ampm {
+        span {
+          font-size: 1.6em;
+        }
+      }
+    }
+    @container (min-width: 35rem) {
+      #ampm {
+        span {
+          font-size: 1.8em;
+        }
+      }
+    }
+    @container (min-width: 39rem) {
+      #ampm {
+        span {
+          font-size: 2em;
+        }
+      }
+    }
+    @container (min-width: 43rem) {
+      #ampm {
+        span {
+          font-size: 2.2em;
+        }
+      }
+    }
+    @container (min-width: 48rem) {
+      #ampm {
+        span {
+          font-size: 2.4em;
+        }
       }
     }
     &.seconds-off {
@@ -452,6 +576,25 @@ const baseSize = `${sizeMeasure / 100}em`;
       }
       #seconds {
         opacity: 0;
+      }
+    }
+    &[data-theme='dark'] {
+      border: calc(var(--baseSize) * 1.5) solid #fff;
+      background: #000;
+      color: #fff;
+      #hours,
+      #minutes {
+        background: #fff;
+      }
+      #brand span {
+        color: #fff;
+      }
+      #ampm span {
+        background: #fff;
+        color: #000;
+      }
+      .line {
+        background: #fff;
       }
     }
   }
@@ -469,11 +612,6 @@ const baseSize = `${sizeMeasure / 100}em`;
   // date elements
   const dayEl = container.querySelector('.day') as HTMLSpanElement;
   const monthEl = container.querySelector('.month') as HTMLSpanElement;
-
-  // const selectSecondsStyle = form.querySelector(
-  //   'select#seconds_style'
-  // )! as HTMLSelectElement;
-  // selectSecondsStyle.selectedIndex = 0;
 
   // number style
   const numbers = container.querySelectorAll(
