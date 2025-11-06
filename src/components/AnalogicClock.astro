@@ -222,7 +222,7 @@ const baseSize = `${sizeMeasure / 100}em`;
     #seconds,
     #minutes,
     #hours {
-      display: block;
+      transform: translate(-50%, -100%) rotate(var(--handRotation));
       transform-origin: center bottom;
       z-index: 10;
       background: #000;
@@ -241,7 +241,6 @@ const baseSize = `${sizeMeasure / 100}em`;
     #hours,
     #minutes {
       clip-path: polygon(40% 0, 60% 0%, 100% 140%, 0 140%);
-      transition: 1s;
       width: calc(var(--size) * 0.02);
       &::after {
         background: #000;
@@ -587,28 +586,33 @@ const baseSize = `${sizeMeasure / 100}em`;
       const timeSeconds = time.getSeconds();
       const timeMilliseconds = time.getMilliseconds();
 
-      const hoursDegrees =
-        (timeHours % 24) * 30 + ((60 / 12) * timeMinutes) / 10;
-      hours.style.transform = `translate(-50%, -100%) rotate(${hoursDegrees}deg)`;
-      let minutesDegrees;
-      if (interval <= 1000) {
-        minutesDegrees = timeMinutes * 6 + timeSeconds / 10;
-      } else {
-        minutesDegrees = timeMinutes * 6;
-      }
+      // hours degrees
+      const hoursDegrees = timeHours * 30 + timeMinutes / 2;
+      hours.style.cssText += `--handRotation: ${hoursDegrees}deg`;
 
-      // console.log('🚀 ~ :577 ~ updateClock ~ minutesDegrees:', minutesDegrees);
-      minutes.style.transform = `translate(-50%, -100%) rotate(${minutesDegrees}deg)`;
+      //  minutes degrees
+      let minutesDegrees = timeMinutes * 6;
+      if (interval <= 1000) {
+        minutesDegrees += timeSeconds / 10;
+      }
+      minutes.style.cssText += `--handRotation: ${minutesDegrees}deg`;
+
+      // seconds degrees
       const secondsDegrees =
         interval < 1000
           ? Math.ceil((timeSeconds * 1000 + timeMilliseconds) / 1.666666) / 100
-          : interval === 1000
-            ? timeSeconds * 6
-            : 0;
+          : timeSeconds * 6;
+      seconds.style.cssText += `--handRotation: ${secondsDegrees}deg`;
 
-      seconds.style.transform = `translate(-50%, -100%) rotate(${secondsDegrees}deg)`;
-      console.log('🚀 ~ :81 ~ time:', time);
-      console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
+      // logs
+      if (import.meta.env.DEV) {
+        console.log('🚀 ~ :81 ~ time:', time);
+        console.log(
+          '🚀 ~ :577 ~ updateClock ~ minutesDegrees:',
+          minutesDegrees
+        );
+        console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
+      }
     }, interval);
   }
 
