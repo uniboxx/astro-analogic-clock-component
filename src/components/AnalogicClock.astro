@@ -261,6 +261,7 @@ const baseSize = `${sizeMeasure / 100}em`;
       background: #f00;
       width: calc(var(--size) * 0.005);
       height: 35%;
+
       &::after {
         background: #f00;
       }
@@ -452,7 +453,16 @@ const baseSize = `${sizeMeasure / 100}em`;
         font-size: 3.6em;
       }
     }
+    &.seconds-off {
+      #pern {
+        background: #000 !important;
+      }
+      #seconds {
+        opacity: 0;
+      }
+    }
   }
+
   form {
     display: flex;
     flex-direction: column;
@@ -521,30 +531,36 @@ const baseSize = `${sizeMeasure / 100}em`;
   // seconds style
   let interval: number, clock: any;
 
+  let out1: any = null;
+  let out2: any = null;
+  function clearTimeouts() {
+    if (out1) {
+      clearTimeout(out1);
+      clearTimeout(out2);
+    }
+  }
   function setSecondsStyle(value: string) {
     // console.log('🚀 ~ :525 ~ setSecondsStyle ~ value:', value);
-    if (value === 'smooty') {
-      seconds.style.display = 'block';
-      pern.style.background = '#f00';
-      updateClock(100);
-    } else if (value === 'off') {
-      seconds.style.display = 'none';
-      pern.style.background = '#000';
-
+    if (value === 'off') {
+      container.classList.add('seconds-off');
       updateClock(1001);
       interval = 60000 - new Date().getSeconds() * 1000;
-      // console.log('🚀 ~ :535 ~ setSecondsStyle ~ interval:', interval);
 
-      setTimeout(() => {
+      out1 = setTimeout(() => {
         updateClock(interval - 1500);
       }, 1500);
-      setTimeout(() => {
+
+      out2 = setTimeout(() => {
         updateClock(60000);
       }, interval + 500);
     } else {
-      seconds.style.display = 'block';
-      pern.style.background = '#f00';
-      updateClock(1000);
+      clearTimeouts();
+      container.classList.remove('seconds-off');
+      if (value === 'smooty') {
+        updateClock(100);
+      } else {
+        updateClock(1000);
+      }
     }
   }
   selectSecondsStyle.addEventListener('change', (e: any) => {
@@ -563,7 +579,7 @@ const baseSize = `${sizeMeasure / 100}em`;
 
   function updateClock(interval: number) {
     if (clock) clearInterval(clock);
-    // console.log('interval', interval);
+    console.log('interval', interval);
     clock = setInterval(() => {
       const time = new Date();
       const timeHours = time.getHours();
@@ -591,8 +607,8 @@ const baseSize = `${sizeMeasure / 100}em`;
             : 0;
 
       seconds.style.transform = `translate(-50%, -100%) rotate(${secondsDegrees}deg)`;
-      // console.log('🚀 ~ :81 ~ time:', time);
-      // console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
+      console.log('🚀 ~ :81 ~ time:', time);
+      console.log('🚀 ~ :139 ~ secondsDegrees:', secondsDegrees);
     }, interval);
   }
 
