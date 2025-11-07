@@ -140,8 +140,13 @@ const variables = `--size: ${size};`;
           transform: rotate(calc(var(--rotation) * -1));
           font-weight: 600;
           font-size: calc(var(--containerWidth) / 10);
+          font-family: sans-serif;
         }
       }
+    }
+    &[data-number-style='roman'] .number span {
+      transform: none;
+      font-family: 'Roboto', sans-serif;
     }
     #pern,
     #seconds,
